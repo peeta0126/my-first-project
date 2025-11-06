@@ -3,26 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>🦇 Bat Avoider Lobby</title>
+  <title>🦇 Bat Avoider</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- ===== 로비 ===== -->
   <div class="wrap" id="lobby">
     <h1>🦇 Bat Avoider</h1>
     <p>날아다니는 박쥐가 장애물을 피하도록 도와주세요!</p>
 
-    <!-- 금액 표시 -->
-    <div id="balance">💰 현재 금액: <span id="money">1000</span>코인</div>
+    <!-- 코인 표시 -->
+    <div id="balance">
+      💰 현재 코인: <span id="money">1000</span>
+    </div>
 
-    <!-- 버튼 -->
-    <div class="btn-group">
-      <button id="startBtn">게임 시작</button>
-      <button id="encyclopediaBtn">📝 박쥐 도감</button>
-      <button id="drawBtn">🎲 박쥐 뽑기</button>
+    <button id="startBtn">게임 시작</button>
+    <div style="margin-top:16px;">
+      <button id="encyclopediaBtn">📖 박쥐 도감</button>
+      <button id="drawBtn" style="margin-left:8px;">🎲 박쥐 뽑기</button>
     </div>
   </div>
 
-  <!-- 게임 화면 -->
+  <!-- ===== 게임 화면 ===== -->
   <div class="wrap" id="gameWrap" style="display:none">
     <canvas id="game" width="900" height="600"></canvas>
     <div class="hud">
@@ -33,18 +35,25 @@
       </div>
       <div class="center muted">
         <button id="exitBtn" class="exit-btn">← 로비로</button>
-        Controls: Space / Click / Tap — flap
+        Controls: Space / Click / Tap
       </div>
     </div>
   </div>
 
-  <!-- 박쥐 도감 모달 -->
+  <!-- ===== 도감 모달 ===== -->
   <div id="encyclopediaModal">
     <div id="encyclopediaContent">
       <button id="closeModal">✖ 닫기</button>
       <h2>🦇 박쥐 도감</h2>
-      <ul id="batList" class="bat-gallery"></ul>
+      <ul id="batList"></ul>
     </div>
+  </div>
+
+  <!-- ===== 뽑기 이펙트 ===== -->
+  <div id="drawEffect" class="draw-effect">
+    <div class="effect-bg"></div>
+    <img id="drawBatImg" src="" alt="뽑은 박쥐" />
+    <div class="effect-text">🎉 새로운 박쥐 획득!</div>
   </div>
 
   <script src="script.js"></script>
