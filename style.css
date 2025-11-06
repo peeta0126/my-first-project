@@ -339,3 +339,56 @@ button:hover {
   from { opacity: 0; transform: translateY(40px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+
+/* ===== 모바일 최적화 ===== */
+html, body {
+  touch-action: none;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  max-width: 900px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #e9f2ff 100%);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+}
+
+/* 모바일 버튼 터치영역 & 폰트 크기 조정 */
+@media (max-width: 600px) {
+  #lobby h1 {
+    font-size: 42px;
+  }
+
+  #lobby p {
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+
+  #lobby button {
+    width: 220px;
+    font-size: 18px;
+    padding: 12px 0;
+  }
+
+  #balance {
+    width: 80%;
+    font-size: 18px;
+    padding: 10px;
+  }
+
+  .hud {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #game {
+    width: 100vw;
+    height: auto;
+  }
+}
