@@ -8,6 +8,11 @@
   <link rel="manifest" href="manifest.json" />
   <title>🦇 Bat Avoider</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- 모바일 앱용 아이콘 -->
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 </head>
 <body>
   <!-- ===== 로비 ===== -->
@@ -15,25 +20,25 @@
     <h1>🦇 Bat Avoider</h1>
     <p>날아다니는 박쥐가 장애물을 피하도록 도와주세요!</p>
 
-    <div id="balance">💰 현재 코인: <span id="money">1000</span></div>
+    <div id="balance">💰 현재 코인: <span id="money">0</span></div>
 
-    <button id="startBtn">게임 시작</button>
-    <button id="encyclopediaBtn">📘 박쥐 도감</button>
-    <button id="drawBtn">🎲 박쥐 뽑기</button>
+    <div class="btn-group">
+      <button id="startBtn">🎮 게임 시작</button>
+      <button id="encyclopediaBtn">📘 박쥐 도감</button>
+      <button id="drawBtn">🎲 박쥐 뽑기</button>
+    </div>
   </div>
 
   <!-- ===== 게임 화면 ===== -->
   <div class="wrap" id="gameWrap" style="display:none;">
     <canvas id="game" width="900" height="600"></canvas>
     <div class="hud">
-      <div>
+      <div class="hud-left">
         <span id="score">Score: 0</span>
         <span id="best">Best: 0</span>
-        <span id="collection">🦇 수집: 0</span>
       </div>
-      <div>
+      <div class="hud-right">
         <button id="exitBtn">← 로비로</button>
-        <span>Controls: Space / Click / Tap</span>
       </div>
     </div>
   </div>
@@ -54,12 +59,34 @@
     <div class="effect-text">🎉 새로운 박쥐 획득!</div>
   </div>
 
+  <!-- ===== 세로모드 안내창 ===== -->
+  <div id="rotateNotice">
+    📱 가로모드로 돌려주세요!
+  </div>
+
   <script src="script.js"></script>
+
   <script>
   // ===== PWA 등록 =====
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js');
   }
+
+  // ===== 세로모드 감지 =====
+  function checkOrientation() {
+    const notice = document.getElementById('rotateNotice');
+    if (window.innerHeight > window.innerWidth) {
+      notice.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    } else {
+      notice.style.display = 'none';
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  window.addEventListener('resize', checkOrientation);
+  window.addEventListener('orientationchange', checkOrientation);
+  window.addEventListener('load', checkOrientation);
   </script>
 </body>
 </html>
