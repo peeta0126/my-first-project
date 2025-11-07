@@ -31,15 +31,39 @@
   <!-- ===== 게임 화면 ===== -->
   <div class="wrap" id="gameWrap" style="display:none;">
     <canvas id="game" width="900" height="600"></canvas>
+
+    <!-- HUD -->
     <div class="hud">
       <div class="hud-left">
-        <span id="score">Score: 0</span>
-        <span id="best">Best: 0</span>
+        <div id="scoreInfo">
+          <div>🏆 <span id="score">Score: 0</span></div>
+          <div>💯 <span id="best">Best: 0</span></div>
+          <div>💰 <span id="earned">이번판: 0원</span></div>
+        </div>
       </div>
       <div class="hud-right">
-        <button id="exitBtn">← 로비로</button>
+        <button id="pauseBtn" class="pause-btn">⏸️</button>
       </div>
     </div>
+
+        <!-- 일시정지 메뉴 -->
+    <div id="pauseMenu" class="pause-menu">
+      <div class="pause-box">
+        <h2>⏸ 일시정지</h2>
+        <button id="resumeBtn">▶ 다시 시작</button>
+        <button id="toLobbyBtn">🏠 로비로</button>
+      </div>
+    </div>
+
+    <!-- 게임 오버 메뉴 -->
+    <div id="gameOverMenu" class="pause-menu">
+      <div class="pause-box">
+        <h2>💀 게임 오버</h2>
+        <button id="retryBtn">🔁 다시 시작</button>
+        <button id="overLobbyBtn">🏠 로비로</button>
+      </div>
+    </div>
+
   </div>
 
   <!-- ===== 도감 모달 ===== -->
@@ -64,14 +88,13 @@
   </div>
 
   <script src="script.js"></script>
-
   <script>
   // ===== PWA 등록 =====
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js');
   }
 
-  // ===== 가로모드 잠금 (지원 브라우저에서만 작동) =====
+  // ===== 가로모드 자동 잠금 시도 =====
   async function lockLandscape() {
     try {
       if (screen.orientation && screen.orientation.lock) {
@@ -83,12 +106,10 @@
     }
   }
 
-  // ===== 가로모드 감지 및 레이아웃 제어 =====
   function checkOrientation() {
     const notice = document.getElementById('rotateNotice');
     const lobby = document.getElementById('lobby');
     const gameWrap = document.getElementById('gameWrap');
-
     if (window.innerWidth < window.innerHeight) {
       notice.style.display = 'flex';
       lobby.style.display = 'none';

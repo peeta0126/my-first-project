@@ -3,36 +3,22 @@ const lobby = document.getElementById('lobby');
 const gameWrap = document.getElementById('gameWrap');
 const moneyElem = document.getElementById('money');
 document.getElementById('startBtn').addEventListener('click', startGame);
-document.getElementById('exitBtn').addEventListener('click', backToLobby);
 
-let gameRunning = false;
-let loopId = null; // requestAnimationFrame 루프 ID 저장용
+let loopId = null;
 
 function startGame() {
   lobby.style.display = 'none';
-  gameWrap.style.display = 'block';
-  initGame(); // 항상 새로 시작해서 선택된 박쥐 반영
+  gameWrap.style.display = 'flex';
+  initGame();
 }
 
 function backToLobby() {
   gameWrap.style.display = 'none';
   lobby.style.display = 'flex';
-  lobby.style.flexDirection = 'column';
-  lobby.style.justifyContent = 'center';
-  lobby.style.alignItems = 'center';
-  lobby.style.textAlign = 'center';
-  lobby.style.height = '100vh';
-  lobby.style.margin = '0 auto';
-
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  gameRunning = false;
-  if (loopId) {
-    cancelAnimationFrame(loopId);
-    loopId = null;
-  }
+  if (loopId) cancelAnimationFrame(loopId);
 }
 
 // ===== 박쥐 도감 & 뽑기 =====
@@ -42,12 +28,9 @@ const bats = [
 ];
 
 // ===== 기본 데이터 설정 =====
-if (!localStorage.getItem('bats'))
-  localStorage.setItem('bats', JSON.stringify(["박쥐1"])); // 기본 박쥐 등록
-if (!localStorage.getItem('selectedBat'))
-  localStorage.setItem('selectedBat', "박쥐1");
-if (!localStorage.getItem('money'))
-  localStorage.setItem('money', 0); // 초기 금액 0원
+if (!localStorage.getItem('bats')) localStorage.setItem('bats', JSON.stringify(["박쥐1"]));
+if (!localStorage.getItem('selectedBat')) localStorage.setItem('selectedBat', "박쥐1");
+if (!localStorage.getItem('money')) localStorage.setItem('money', 0);
 
 let money = parseInt(localStorage.getItem('money'));
 moneyElem.innerText = money;
@@ -74,9 +57,8 @@ function refreshBatList() {
         refreshBatList();
       });
       if (b === selectedBat) li.classList.add('selected');
-    } else {
-      li.classList.add('locked');
-    }
+    } else li.classList.add('locked');
+
     li.appendChild(img);
     li.appendChild(label);
     batListElem.appendChild(li);
@@ -92,7 +74,7 @@ document.getElementById('drawBtn').addEventListener('click', () => {
   moneyElem.innerText = money;
   localStorage.setItem('money', money);
 
-  const availableBats = bats.filter(b => !collectedBats.has(b) && b !== "박쥐10"); // 레전더리 제외
+  const availableBats = bats.filter(b => !collectedBats.has(b) && b !== "박쥐10");
   if (availableBats.length === 0) return alert("모든 박쥐를 이미 수집했습니다!");
 
   const randomBat = availableBats[Math.floor(Math.random() * availableBats.length)];
@@ -115,72 +97,118 @@ document.getElementById('drawBtn').addEventListener('click', () => {
 const modal = document.getElementById('encyclopediaModal');
 document.getElementById('encyclopediaBtn').addEventListener('click', () => modal.style.display='flex');
 document.getElementById('closeModal').addEventListener('click', () => modal.style.display='none');
-window.addEventListener('click', e => { if(e.target===modal) modal.style.display='none'; });
+window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
 
 // ===== Bat Avoider Game =====
 function initGame() {
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
-
-  if (loopId) {
-    cancelAnimationFrame(loopId);
-    loopId = null;
-  }
+  if (loopId) cancelAnimationFrame(loopId);
 
   const currentBat = localStorage.getItem('selectedBat') || "박쥐1";
   const batIndex = bats.indexOf(currentBat) + 1;
   const batImg = new Image();
   batImg.src = `박쥐_인게임_모션/bat${batIndex}_fly_2x4.png`;
 
-  let frame = 0, score = 0, best = 0;
+  let frame = 0, score = 0, best = 0, earnedThisRun = 0;
   const gravity = 0.6, flapPower = -10;
+  const bat = {x:160, y:H/2, w:64, h:48, vy:0, angle:0, alive:true, flap(){if(this.alive)this.vy=flapPower;}, animFrame:0, frameDelay:0};
+  const totalFrames=8, framesPerRow=4, framesPerCol=2;
+  const obstacles=[], coins=[];
+  const pipeWidth=90, gapSize=180;
+  const spawnInterval=110, coinSpawnInterval=200, coinRadius=15;
 
-  const bat = {
-    x: 160, y: H/2,
-    w: 64, h: 48,
-    vy: 0, angle: 0,
-    alive: true,
-    flap() { if (this.alive) this.vy = flapPower; },
-    animFrame: 0, frameDelay: 0
-  };
+  const scoreElem = document.getElementById('score');
+  const bestElem = document.getElementById('best');
+  const earnedElem = document.getElementById('earned');
 
-  const totalFrames = 8, framesPerRow = 4, framesPerCol = 2;
-  const obstacles = [], coins = [];
-  const pipeWidth = 90, gapSize = 180;
-  const spawnInterval = 110, coinSpawnInterval = 200, coinRadius = 15;
+  const pauseBtn = document.getElementById('pauseBtn');
+  const pauseMenu = document.getElementById('pauseMenu');
+  const resumeBtn = document.getElementById('resumeBtn');
+  const toLobbyBtn = document.getElementById('toLobbyBtn');
 
+  const gameOverMenu = document.getElementById('gameOverMenu');
+  const retryBtn = document.getElementById('retryBtn');
+  const overLobbyBtn = document.getElementById('overLobbyBtn');
+
+  let isPaused = false;
+  let isGameOver = false;
+
+  // ===== 일시정지 버튼 =====
+  pauseBtn.addEventListener('click', () => {
+    if (!bat.alive || isPaused) return;
+    isPaused = true;
+    pauseMenu.style.display = 'flex';
+  });
+  resumeBtn.addEventListener('click', () => {
+    isPaused = false;
+    pauseMenu.style.display = 'none';
+  });
+  toLobbyBtn.addEventListener('click', () => {
+    isPaused = false;
+    pauseMenu.style.display = 'none';
+    backToLobby();
+  });
+
+  // ===== 게임오버 메뉴 버튼 =====
+  retryBtn.addEventListener('click', () => {
+    gameOverMenu.style.display = 'none';
+    reset();
+    isGameOver = false;
+  });
+  overLobbyBtn.addEventListener('click', () => {
+    gameOverMenu.style.display = 'none';
+    isGameOver = false;
+    backToLobby();
+  });
+
+  // ===== 스폰 함수 =====
   function spawnPipe() {
     const margin = 60;
-    const gapY = margin + Math.random() * (H - margin*2 - gapSize);
-    obstacles.push({ x: W+40, gapY, gapH: gapSize, w: pipeWidth, passed: false });
+    const gapY = margin + Math.random() * (H - margin * 2 - gapSize);
+    obstacles.push({ x: W + 40, gapY, gapH: gapSize, w: pipeWidth, passed: false });
   }
 
-  // ===== 코인 자연스러운 배치 =====
   function spawnCoin() {
-    const baseY = H / 2;
-    const offset = (Math.random() - 0.5) * 180; // 중심 기준 위아래 90px 흔들림
-    const y = Math.min(Math.max(60, baseY + offset), H - 60);
-    coins.push({ x: W+40, y, r: coinRadius, collected:false });
+    const lastPipe = obstacles[obstacles.length - 1];
+    let y;
+    if (lastPipe) {
+      const gapCenter = lastPipe.gapY + lastPipe.gapH / 2;
+      const offset = (Math.random() - 0.5) * 80;
+      y = Math.min(Math.max(60, gapCenter + offset), H - 60);
+    } else {
+      const baseY = H / 2;
+      const offset = (Math.random() - 0.5) * 120;
+      y = Math.min(Math.max(60, baseY + offset), H - 60);
+    }
+    coins.push({ x: W + 80, y, r: coinRadius, collected: false });
   }
 
   function reset() {
     frame = 0;
     score = 0;
-    bat.y = H/2;
+    bat.y = H / 2;
     bat.vy = 0;
     bat.alive = true;
-    bat.animFrame = 0;
-    bat.frameDelay = 0;
+    earnedThisRun = 0;
+    earnedElem.textContent = "이번판: 0원";
     obstacles.length = 0;
     coins.length = 0;
-    document.getElementById('score').textContent = 'Score: 0';
+    scoreElem.textContent = 'Score: 0';
   }
 
-  function die() { bat.alive = false; bat.vy = -6; }
+  function die() {
+    if (isGameOver) return;
+    bat.alive = false;
+    bat.vy = -6;
+    isGameOver = true;
+    setTimeout(() => { gameOverMenu.style.display = 'flex'; }, 800);
+  }
 
+  // ===== 업데이트 =====
   function update() {
-    if (!bat.alive) return;
+    if (!bat.alive || isPaused || isGameOver) return;
 
     frame++;
     if (frame % spawnInterval === 0) spawnPipe();
@@ -188,33 +216,29 @@ function initGame() {
 
     bat.vy += gravity;
     bat.y += bat.vy;
-    bat.angle = Math.max(-0.6, Math.min(1.0, bat.vy/15));
+    bat.angle = Math.max(-0.6, Math.min(1.0, bat.vy / 15));
     bat.frameDelay++;
     if (bat.frameDelay % 5 === 0) bat.animFrame = (bat.animFrame + 1) % totalFrames;
 
-    // 장애물 업데이트 및 점수 계산
     for (const p of obstacles) {
       p.x -= 3;
       if (!p.passed && p.x + p.w < bat.x) {
         p.passed = true;
         score++;
-        document.getElementById('score').textContent = 'Score: ' + score;
-        if(score > best){
+        scoreElem.textContent = 'Score: ' + score;
+        if (score > best) {
           best = score;
-          document.getElementById('best').textContent = 'Best: ' + best;
+          bestElem.textContent = 'Best: ' + best;
         }
-
-        // 🌟 30점 이상 시 박쥐10 자동 해금
-        if(score >= 30 && !collectedBats.has("박쥐10")){
+        if (score >= 30 && !collectedBats.has("박쥐10")) {
           collectedBats.add("박쥐10");
           localStorage.setItem('bats', JSON.stringify([...collectedBats]));
           refreshBatList();
-
           const effect = document.getElementById('drawEffect');
-          const batImgElem = document.getElementById('drawBatImg');
-          const textElem = effect.querySelector('.effect-text');
-          batImgElem.src = `박쥐_도감/박쥐10.png`;
-          textElem.textContent = `🌟 전설의 박쥐10 해금!`;
+          const img = document.getElementById('drawBatImg');
+          const txt = effect.querySelector('.effect-text');
+          img.src = `박쥐_도감/박쥐10.png`;
+          txt.textContent = `🌟 전설의 박쥐10 해금!`;
           effect.classList.add('legendary');
           effect.style.display = 'flex';
           setTimeout(() => effect.style.display = 'none', 3000);
@@ -223,30 +247,31 @@ function initGame() {
     }
     while (obstacles.length && obstacles[0].x + obstacles[0].w < -100) obstacles.shift();
 
-    // 코인 수집
+    // ===== 코인 =====
     for (const c of coins) {
       c.x -= 3;
       const dx = Math.abs(bat.x - c.x);
       const dy = Math.abs(bat.y - c.y);
-      if (!c.collected && dx < bat.w/2 + c.r && dy < bat.h/2 + c.r) {
+      if (!c.collected && dx < bat.w / 2 + c.r && dy < bat.h / 2 + c.r) {
         c.collected = true;
-        let money = parseInt(moneyElem.innerText) + 100;
+        let money = parseInt(moneyElem.innerText) + 10;
         moneyElem.innerText = money;
         localStorage.setItem('money', money);
+        earnedThisRun += 10;
+        earnedElem.textContent = `이번판: ${earnedThisRun}원`;
       }
     }
     while (coins.length && coins[0].x < -50) coins.shift();
 
-    // 충돌 체크
-    if(bat.y + bat.h/2 >= H || bat.y - bat.h/2 <= 0) die();
+    if (bat.y + bat.h / 2 >= H || bat.y - bat.h / 2 <= 0) die();
     for (const p of obstacles) {
-      const inX = bat.x + bat.w/2 > p.x && bat.x - bat.w/2 < p.x + p.w;
-      if (inX && (bat.y - bat.h/2 < p.gapY || bat.y + bat.h/2 > p.gapY + p.gapH)) die();
+      const inX = bat.x + bat.w / 2 > p.x && bat.x - bat.w / 2 < p.x + p.w;
+      if (inX && (bat.y - bat.h / 2 < p.gapY || bat.y + bat.h / 2 > p.gapY + p.gapH)) die();
     }
   }
 
+  // ===== 그리기 =====
   function draw() {
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, W, H);
     ctx.fillStyle = '#e9f2ff';
     ctx.fillRect(0, 0, W, H);
@@ -259,10 +284,13 @@ function initGame() {
 
     for (const c of coins) {
       if (c.collected) continue;
-      ctx.fillStyle = '#ffcc00';
+      const glow = Math.sin(frame / 10) * 0.3 + 0.7;
+      ctx.fillStyle = `rgba(255,220,40,${glow})`;
       ctx.beginPath();
       ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
       ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,180,0.8)';
+      ctx.stroke();
     }
 
     ctx.save();
@@ -273,20 +301,12 @@ function initGame() {
       const fh = batImg.height / framesPerCol;
       const col = bat.animFrame % framesPerRow;
       const row = Math.floor(bat.animFrame / framesPerRow);
-      ctx.drawImage(batImg, fw * col, fh * row, fw, fh, -bat.w/2, -bat.h/2, bat.w, bat.h);
+      ctx.drawImage(batImg, fw * col, fh * row, fw, fh, -bat.w / 2, -bat.h / 2, bat.w, bat.h);
     }
     ctx.restore();
-
-    if (!bat.alive) {
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
-      ctx.fillRect(0, 0, W, H);
-      ctx.fillStyle = '#111';
-      ctx.font = '36px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Game Over — Click or press Space', W / 2, H / 2);
-    }
   }
 
+  // ===== 입력 =====
   function handleKey(e) {
     if (e.code === 'Space') {
       e.preventDefault();
@@ -304,6 +324,7 @@ function initGame() {
   window.addEventListener('keydown', handleKey);
   canvas.addEventListener('pointerdown', handleClick);
 
+  // ===== 루프 =====
   function loop() {
     update();
     draw();
@@ -312,5 +333,4 @@ function initGame() {
 
   spawnPipe();
   loop();
-  gameRunning = true;
 }
