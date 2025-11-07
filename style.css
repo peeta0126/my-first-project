@@ -327,57 +327,72 @@ canvas {
 }
 
 /* ===== 모바일 가로모드 반응형 ===== */
-@media (orientation: landscape) and (max-width: 900px) {
-  #lobby h1 { font-size: 42px; }
-  #lobby p { font-size: 16px; margin-bottom: 20px; }
-  #lobby button { width: 200px; font-size: 18px; padding: 10px 0; }
-  #balance { font-size: 16px; padding: 10px; }
-  .hud { flex-direction: column; gap: 8px; }
-}
+/* ===== 모바일 / 가로모드 레이아웃 ===== */
+@media (orientation: landscape) {
+  html, body {
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
 
-
-/* ===== 모바일 버튼 그룹 ===== */
-.btn-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* 모바일 레이아웃 강화 */
-@media (max-width: 600px) and (orientation: landscape) {
-  #lobby {
-    justify-content: center;
-    padding: 0 10px;
-  }
-  #lobby h1 {
-    font-size: 38px;
-  }
-  #lobby p {
-    font-size: 14px;
-    margin-bottom: 16px;
-  }
-  #balance {
-    font-size: 16px;
-    margin-bottom: 18px;
-    width: 80%;
-  }
-  #lobby button {
-    width: 220px;
-    font-size: 18px;
-    padding: 12px;
-  }
-  .hud {
+  #lobby, #gameWrap {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    gap: 4px;
+  }
+
+  canvas {
+    width: 100vw;
+    height: calc(100vh - 100px);
+    object-fit: contain;
+  }
+
+  .hud {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    font-size: 18px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #lobby button {
+    width: 240px;
+    font-size: 18px;
+    padding: 14px 0;
   }
 }
 
-/* iPhone 등 노치 영역 고려 */
-@supports(padding: max(0px)) {
-  body {
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-  }
+/* ===== 세로모드 안내창 ===== */
+#rotateNotice {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.9);
+  color: #fff;
+  font-size: 28px;
+  font-weight: bold;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  text-shadow: 0 0 12px #00bfff;
+  animation: pulseNotice 2s infinite;
+}
+@keyframes pulseNotice {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }

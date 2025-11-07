@@ -9,7 +9,6 @@
   <title>🦇 Bat Avoider</title>
   <link rel="stylesheet" href="style.css" />
 
-  <!-- 모바일 앱용 아이콘 -->
   <link rel="apple-touch-icon" href="icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -72,15 +71,34 @@
     navigator.serviceWorker.register('service-worker.js');
   }
 
-  // ===== 세로모드 감지 =====
+  // ===== 가로모드 잠금 (지원 브라우저에서만 작동) =====
+  async function lockLandscape() {
+    try {
+      if (screen.orientation && screen.orientation.lock) {
+        await screen.orientation.lock('landscape');
+        console.log("✅ Landscape locked");
+      }
+    } catch (err) {
+      console.log("⚠️ Orientation lock failed:", err);
+    }
+  }
+
+  // ===== 가로모드 감지 및 레이아웃 제어 =====
   function checkOrientation() {
     const notice = document.getElementById('rotateNotice');
-    if (window.innerHeight > window.innerWidth) {
+    const lobby = document.getElementById('lobby');
+    const gameWrap = document.getElementById('gameWrap');
+
+    if (window.innerWidth < window.innerHeight) {
       notice.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
+      lobby.style.display = 'none';
+      gameWrap.style.display = 'none';
     } else {
       notice.style.display = 'none';
-      document.body.style.overflow = 'hidden';
+      if (!gameWrap.style.display || gameWrap.style.display === 'none') {
+        lobby.style.display = 'flex';
+      }
+      lockLandscape();
     }
   }
 
