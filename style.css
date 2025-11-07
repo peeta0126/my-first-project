@@ -1,213 +1,58 @@
-/* ===== 기본 변수 ===== */
 :root {
-  --bg-top: #00111a;
-  --bg-bottom: #001f3f;
+  --bg: linear-gradient(180deg, #00111a 0%, #00223a 100%);
+  --text-light: #e0f2ff;
   --accent: #00bfff;
-  --text-light: #f0f8ff;
-  --panel: rgba(255,255,255,0.08);
-  --panel-hover: rgba(255,255,255,0.15);
 }
 
-/* ===== 공통 구조 ===== */
 html, body {
-  width: 100%;
   height: 100%;
   margin: 0;
-  padding: 0;
-  overflow: hidden;
-  font-family: 'Noto Sans KR', 'Inter', sans-serif;
-  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
   color: var(--text-light);
-  touch-action: none;
-  overscroll-behavior: none;
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
 }
 
 .wrap {
   width: 900px;
   max-width: 95vw;
-  margin: auto;
   text-align: center;
-  position: relative;
+  margin: auto;
+  padding: 20px;
 }
 
-/* ===== 타이틀 네온 효과 ===== */
-h1 {
-  font-size: 64px;
-  margin: 12px 0;
-  color: var(--accent);
-  text-shadow: 0 0 15px #00aaff, 0 0 40px #0099ff, 0 0 60px #00ffff;
-  animation: glowTitle 4s ease-in-out infinite alternate;
-}
-
-@keyframes glowTitle {
-  from { text-shadow: 0 0 10px #00aaff, 0 0 20px #0099ff; }
-  to { text-shadow: 0 0 20px #66ffff, 0 0 40px #00ffff; }
-}
-
-/* ===== 로비 ===== */
-#lobby {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: radial-gradient(circle at 50% 30%, #00385a 0%, #00101e 100%);
-  animation: fadeIn 1.2s ease forwards;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-#lobby p {
-  font-size: 18px;
-  color: #bfeaff;
-  margin-bottom: 36px;
-  text-shadow: 0 0 8px rgba(0,200,255,0.3);
-}
-
-/* 코인 표시 */
-#balance {
-  background: rgba(0, 100, 150, 0.25);
-  border-radius: 12px;
-  padding: 12px 30px;
-  font-weight: bold;
-  font-size: 20px;
-  box-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
-  color: #fff;
-  margin-bottom: 30px;
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.15);
-}
-
-/* ===== 버튼 (글래스 스타일) ===== */
+/* ===== 공통 버튼 ===== */
 button {
-  background: rgba(0, 180, 255, 0.15);
-  color: #e0f8ff;
-  border: 2px solid rgba(0, 200, 255, 0.4);
-  border-radius: 14px;
-  font-size: 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 18px;
   cursor: pointer;
-  box-shadow: inset 0 0 10px rgba(0,255,255,0.3), 0 0 20px rgba(0,100,255,0.2);
-  backdrop-filter: blur(4px);
-  transition: all 0.25s ease;
-  margin: 10px auto;
-  width: 240px;
-  padding: 14px 0;
+  transition: 0.2s;
 }
 
 button:hover {
-  background: rgba(0, 200, 255, 0.25);
-  box-shadow: inset 0 0 20px rgba(0,255,255,0.4), 0 0 25px rgba(0,180,255,0.4);
-  transform: translateY(-3px);
+  background: #0088cc;
 }
 
-/* ===== 게임 전체화면 ===== */
-#gameWrap {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(180deg, #e9f2ff 0%, #bcd3ff 100%);
-}
-
-canvas {
-  width: 100vw;
-  height: 100vh;
-  display: block;
-  background: linear-gradient(180deg, #cce8ff 0%, #a3d5ff 100%);
-  border: none;
-}
-
-/* ===== HUD ===== */
+/* ===== 게임 HUD ===== */
 .hud {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 60px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 8px 16px;
-  box-sizing: border-box;
-  font-size: 18px;
-  color: #003;
-  font-weight: bold;
-  text-shadow: 0 0 6px #fff;
+  margin-top: 10px;
 }
 
-.hud-left {
+.center {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.hud-right {
-  display: flex;
-  justify-content: flex-end;
+  gap: 10px;
   align-items: center;
 }
 
-/* ===== 일시정지 버튼 ===== */
-.pause-btn {
-  background: rgba(0,0,0,0.4);
-  border: 2px solid rgba(255,255,255,0.6);
-  color: #fff;
-  font-size: 24px;
-  border-radius: 8px;
-  width: 48px;
-  height: 48px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.pause-btn:hover {
-  background: rgba(0,0,0,0.6);
-}
-
-/* ===== 일시정지 메뉴 ===== */
-.pause-menu {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 200;
-}
-
-.pause-box {
-  background: rgba(255,255,255,0.1);
-  border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 16px;
-  padding: 24px 32px;
-  text-align: center;
-  backdrop-filter: blur(8px);
-  color: #fff;
-  box-shadow: 0 0 20px rgba(255,255,255,0.2);
-  animation: fadeIn 0.5s ease;
-}
-
-.pause-box button {
-  background: rgba(0,180,255,0.25);
-  border: 1px solid rgba(0,200,255,0.4);
-  border-radius: 10px;
-  color: #fff;
-  font-size: 18px;
-  padding: 10px 20px;
-  margin: 8px 0;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.pause-box button:hover {
-  background: rgba(0,200,255,0.4);
+.muted {
+  opacity: 0.7;
+  font-size: 14px;
 }
 
 /* ===== 도감 모달 ===== */
@@ -217,117 +62,333 @@ canvas {
   top: 0; left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.6);
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(4px);
 }
 
-/* ===== 세로모드 안내창 ===== */
-#rotateNotice {
+#encyclopediaContent {
+  background: rgba(255,255,255,0.1);
+  border-radius: 16px;
+  width: 80%;
+  max-width: 700px;
+  max-height: 80%;
+  padding: 24px;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 0 25px rgba(0,0,0,0.4);
+}
+
+#closeModal {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #00bfff;
+  border: none;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ===== 도감 디자인 ===== */
+#batList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 14px;
+  padding: 0;
+  margin-top: 20px;
+}
+
+#batList li {
+  list-style: none;
+  text-align: center;
+  padding: 12px 6px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  transition: 0.2s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+#batList li img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 4px;
+  transition: filter 0.3s, opacity 0.3s;
+}
+
+/* 미수집: 검은 그림자 효과 */
+#batList li.locked img {
+  filter: brightness(0) contrast(1.2);
+  opacity: 0.6;
+}
+
+/* 수집 완료 */
+#batList li.unlocked:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+/* 선택된 박쥐 강조 */
+#batList li.selected {
+  border-color: #00bfff;
+  box-shadow: 0 0 15px #00bfff80;
+  background: rgba(0, 191, 255, 0.15);
+}
+
+/* 이름 라벨 */
+#batList li span {
+  font-size: 15px;
+  color: #fff;
+  display: block;
+  margin-top: 4px;
+}
+
+/* ===== 뽑기 연출 ===== */
+.draw-effect {
   position: fixed;
   top: 0; left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,0.9);
-  color: #fff;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 2000;
+  flex-direction: column;
+}
+
+.draw-effect .effect-bg {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffbe0 0%, transparent 70%);
+  animation: pulse 1.5s infinite;
+}
+
+.draw-effect img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  z-index: 3;
+  filter: drop-shadow(0 0 30px gold);
+  animation: pop 0.6s ease forwards;
+}
+
+.draw-effect .effect-text {
+  margin-top: 16px;
   font-size: 28px;
   font-weight: bold;
-  display: none;
-  align-items: center;
+  color: #fff;
+  text-shadow: 0 0 10px gold;
+}
+
+/* 전설 박쥐 이펙트 */
+.legendary {
+  background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
+}
+
+.legendary .effect-bg {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, gold 0%, transparent 70%);
+  box-shadow: 0 0 40px rgba(255,215,0,0.8);
+  animation: legendaryPulse 1s infinite;
+}
+
+.legendary img {
+  filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 80px #ffcc00);
+}
+
+.legendary .effect-text {
+  color: gold;
+  text-shadow: 0 0 20px gold, 0 0 40px #ffcc00;
+  font-size: 34px;
+}
+
+/* 애니메이션 */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+@keyframes legendaryPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+}
+
+@keyframes pop {
+  0% { transform: scale(0); opacity: 0; }
+  80% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ===== 로비 화면 ===== */
+#lobby {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  z-index: 9999;
-  text-shadow: 0 0 12px #00bfff;
-  animation: pulseNotice 2s infinite;
+  align-items: center;
+  background: radial-gradient(circle at 50% 30%, #00385a 0%, #00101e 100%);
+  color: #e6f7ff;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
-@keyframes pulseNotice {
-  0%,100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* ===== 모바일 가로모드 반응형 ===== */
-@media (orientation: landscape) {
-  html, body {
-    overflow: hidden;
-    width: 100vw;
-    height: 100vh;
-  }
-
-  #lobby, #gameWrap {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  canvas {
-    width: 100vw;
-    height: calc(100vh - 100px);
-    object-fit: contain;
-  }
-
-  .btn-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  #lobby button {
-    width: 240px;
-    font-size: 18px;
-    padding: 14px 0;
-  }
-}
-
-/* ===== 버튼 레이어 클릭 가능하게 ===== */
-.hud, .pause-menu, .pause-box, #pauseBtn, #gameOverMenu {
+/* 네온 배경 효과 */
+#lobby::before {
+  content: "";
   position: absolute;
-  z-index: 1000;
-  pointer-events: auto;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(0,191,255,0.15) 0%, transparent 70%),
+              radial-gradient(circle, rgba(0,128,255,0.1) 20%, transparent 80%);
+  animation: floatGlow 12s infinite linear;
+  z-index: 0;
+}
+
+@keyframes floatGlow {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(10%, -10%) rotate(180deg); }
+  100% { transform: translate(0, 0) rotate(360deg); }
+}
+
+#lobby h1 {
+  font-size: 64px;
+  font-weight: 800;
+  color: #66ccff;
+  text-shadow: 0 0 15px #00aaff, 0 0 40px #0099ff;
+  margin-bottom: 12px;
+  z-index: 1;
+}
+
+#lobby p {
+  font-size: 18px;
+  color: #bfeaff;
+  margin-bottom: 40px;
+  z-index: 1;
+}
+
+/* 코인 박스 */
+#balance {
+  background: rgba(0, 100, 150, 0.25);
+  border-radius: 12px;
+  padding: 12px 30px;
+  font-weight: bold;
+  font-size: 20px;
+  box-shadow: 0 0 20px rgba(0, 191, 255, 0.2);
+  color: #fff;
+  z-index: 1;
+  margin-bottom: 30px;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 버튼 묶음 */
+#lobby button {
+  display: block;
+  width: 240px;
+  margin: 10px auto;
+  padding: 14px 0;
+  background: rgba(0, 180, 255, 0.15);
+  color: #e0f8ff;
+  border: 2px solid rgba(0, 200, 255, 0.4);
+  border-radius: 14px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: inset 0 0 10px rgba(0,255,255,0.3), 0 0 20px rgba(0,100,255,0.2);
+  backdrop-filter: blur(4px);
+  transition: all 0.25s ease;
+  z-index: 1;
+}
+
+#lobby button:hover {
+  background: rgba(0, 200, 255, 0.25);
+  box-shadow: inset 0 0 20px rgba(0,255,255,0.4), 0 0 25px rgba(0,180,255,0.4);
+  transform: translateY(-3px);
+}
+
+/* 아이콘 있는 버튼 간격 */
+#lobby button span {
+  margin-left: 6px;
+}
+
+/* 살짝 공중에 떠 있는 느낌 */
+#lobby {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  position: relative;
+}
+
+@keyframes floatUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ===== 모바일 최적화 ===== */
+html, body {
+  touch-action: none;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 canvas {
-  pointer-events: none; /* 캔버스가 클릭 막지 않게 */
+  width: 100%;
+  height: auto;
+  max-width: 900px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #e9f2ff 100%);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
 }
 
-/* ===== 게임 오버 메뉴 ===== */
-#gameOverMenu {
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1500;
-}
+/* 모바일 버튼 터치영역 & 폰트 크기 조정 */
+@media (max-width: 600px) {
+  #lobby h1 {
+    font-size: 42px;
+  }
 
-#gameOverMenu .pause-box h2 {
-  color: #fff;
-  text-shadow: 0 0 10px red, 0 0 30px #ff5555;
-}
+  #lobby p {
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
 
-/* ===== 도감 이미지 크기 및 비율 고정 ===== */
-#batList li img {
-  width: 96px;              /* PC에서도 균일한 크기 */
-  height: 96px;
-  object-fit: contain;      /* 비율 유지하면서 박쥐 이미지 찌그러짐 방지 */
-  display: block;
-  margin: 0 auto 6px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.05); /* 투명 이미지 대비 */
-  box-shadow: 0 0 8px rgba(0,0,0,0.25);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+  #lobby button {
+    width: 220px;
+    font-size: 18px;
+    padding: 12px 0;
+  }
 
-/* 수집한 박쥐에 호버 효과 */
-#batList li.unlocked:hover img {
-  transform: scale(1.05);
-  box-shadow: 0 0 12px rgba(0,200,255,0.6);
-}
+  #balance {
+    width: 80%;
+    font-size: 18px;
+    padding: 10px;
+  }
 
-/* 잠금된 박쥐는 어둡게 처리 */
-#batList li.locked img {
-  filter: brightness(0) opacity(0.4);
-  background: rgba(0,0,0,0.25);
+  .hud {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #game {
+    width: 100vw;
+    height: auto;
+  }
 }

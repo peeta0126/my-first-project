@@ -1,6 +1,6 @@
 self.addEventListener("install", e => {
   e.waitUntil(
-    caches.open("bat-avoider-v3-landscape").then(cache => {
+    caches.open("bat-avoider-v3").then(cache => {
       return cache.addAll([
         "./",
         "./index.html",

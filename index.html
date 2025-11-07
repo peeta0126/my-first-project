@@ -8,10 +8,6 @@
   <link rel="manifest" href="manifest.json" />
   <title>🦇 Bat Avoider</title>
   <link rel="stylesheet" href="style.css" />
-
-  <link rel="apple-touch-icon" href="icon-192.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 </head>
 <body>
   <!-- ===== 로비 ===== -->
@@ -19,51 +15,27 @@
     <h1>🦇 Bat Avoider</h1>
     <p>날아다니는 박쥐가 장애물을 피하도록 도와주세요!</p>
 
-    <div id="balance">💰 현재 코인: <span id="money">0</span></div>
+    <div id="balance">💰 현재 코인: <span id="money">1000</span></div>
 
-    <div class="btn-group">
-      <button id="startBtn">🎮 게임 시작</button>
-      <button id="encyclopediaBtn">📘 박쥐 도감</button>
-      <button id="drawBtn">🎲 박쥐 뽑기</button>
-    </div>
+    <button id="startBtn">게임 시작</button>
+    <button id="encyclopediaBtn">📘 박쥐 도감</button>
+    <button id="drawBtn">🎲 박쥐 뽑기</button>
   </div>
 
   <!-- ===== 게임 화면 ===== -->
   <div class="wrap" id="gameWrap" style="display:none;">
     <canvas id="game" width="900" height="600"></canvas>
-
-    <!-- HUD -->
     <div class="hud">
-      <div class="hud-left">
-        <div id="scoreInfo">
-          <div>🏆 <span id="score">Score: 0</span></div>
-          <div>💯 <span id="best">Best: 0</span></div>
-          <div>💰 <span id="earned">이번판: 0원</span></div>
-        </div>
+      <div>
+        <span id="score">Score: 0</span>
+        <span id="best">Best: 0</span>
+        <span id="collection">🦇 수집: 0</span>
       </div>
-      <div class="hud-right">
-        <button id="pauseBtn" class="pause-btn">⏸️</button>
-      </div>
-    </div>
-
-        <!-- 일시정지 메뉴 -->
-    <div id="pauseMenu" class="pause-menu">
-      <div class="pause-box">
-        <h2>⏸ 일시정지</h2>
-        <button id="resumeBtn">▶ 다시 시작</button>
-        <button id="toLobbyBtn">🏠 로비로</button>
+      <div>
+        <button id="exitBtn">← 로비로</button>
+        <span>Controls: Space / Click / Tap</span>
       </div>
     </div>
-
-    <!-- 게임 오버 메뉴 -->
-    <div id="gameOverMenu" class="pause-menu">
-      <div class="pause-box">
-        <h2>💀 게임 오버</h2>
-        <button id="retryBtn">🔁 다시 시작</button>
-        <button id="overLobbyBtn">🏠 로비로</button>
-      </div>
-    </div>
-
   </div>
 
   <!-- ===== 도감 모달 ===== -->
@@ -82,50 +54,12 @@
     <div class="effect-text">🎉 새로운 박쥐 획득!</div>
   </div>
 
-  <!-- ===== 세로모드 안내창 ===== -->
-  <div id="rotateNotice">
-    📱 가로모드로 돌려주세요!
-  </div>
-
   <script src="script.js"></script>
   <script>
   // ===== PWA 등록 =====
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js');
   }
-
-  // ===== 가로모드 자동 잠금 시도 =====
-  async function lockLandscape() {
-    try {
-      if (screen.orientation && screen.orientation.lock) {
-        await screen.orientation.lock('landscape');
-        console.log("✅ Landscape locked");
-      }
-    } catch (err) {
-      console.log("⚠️ Orientation lock failed:", err);
-    }
-  }
-
-  function checkOrientation() {
-    const notice = document.getElementById('rotateNotice');
-    const lobby = document.getElementById('lobby');
-    const gameWrap = document.getElementById('gameWrap');
-    if (window.innerWidth < window.innerHeight) {
-      notice.style.display = 'flex';
-      lobby.style.display = 'none';
-      gameWrap.style.display = 'none';
-    } else {
-      notice.style.display = 'none';
-      if (!gameWrap.style.display || gameWrap.style.display === 'none') {
-        lobby.style.display = 'flex';
-      }
-      lockLandscape();
-    }
-  }
-
-  window.addEventListener('resize', checkOrientation);
-  window.addEventListener('orientationchange', checkOrientation);
-  window.addEventListener('load', checkOrientation);
   </script>
 </body>
 </html>
